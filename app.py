@@ -53,6 +53,7 @@ studio_mode = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
+st.sidebar.info("🤖 **Claude AI Agent Integration**:\nThis web app is an interactive visual playground. To give **Claude Desktop** or **Cursor** full autonomous EDA superpowers, connect CDA via MCP (see GitHub README).")
 st.sidebar.markdown("### 🔗 Open-Source Ecosystem")
 st.sidebar.markdown("[GitHub Repository](https://github.com/hosseinnosrati/circuit-design-anything)")
 st.sidebar.markdown("[Hardware Debug Anything (HDA)](https://github.com/hosseinnosrati/hardware-debug-anything)")
