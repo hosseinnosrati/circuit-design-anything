@@ -1,10 +1,11 @@
-# Circuit Design Anything (CDA)
+﻿# Circuit Design Anything (CDA)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol-8A2BE2.svg)](https://modelcontextprotocol.io)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-brightgreen.svg)](https://python.org)
 [![Tests](https://img.shields.io/badge/Tests-12%2F12%20Passing-success.svg)](tests/)
 [![Architecture](https://img.shields.io/badge/Architecture-Closed--Loop%20EDA-orange.svg)](#architecture)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://circuit-design-anything-sgsl7u3hcr76gy96xsltgg.streamlit.app/)
 
 > **Autonomous Electronic Design Automation (EDA) MCP Server for AI Agents.**  
 > Turn **Claude Code**, **Cursor**, **Windsurf**, and LLMs into hardware engineers equipped with closed-loop SPICE simulation, IEC 60063 component snapping, vector schematic rendering, and KiCad PCB netlist generation.
