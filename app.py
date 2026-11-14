@@ -1,0 +1,167 @@
+"""Streamlit Web Application for Circuit Design Anything (CDA).
+
+Interactive 24/7 Cloud EDA Studio:
+- Real-time parametric circuit synthesis
+- IEC 60063 E-series component snapping
+- SPICE frequency response Bode plots
+- Schemdraw vector schematic display
+- KiCad netlist & BOM export
+"""
+
+import io
+import math
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+
+from cda.templates import (
+    synthesize_sallen_key_lowpass,
+    synthesize_twin_t_notch,
+    synthesize_rc_lowpass,
+    synthesize_instrumentation_amp,
+)
+from cda.engine.kicad import KiCadExporter
+
+st.set_page_config(
+    page_title="Circuit Design Anything (CDA) | Autonomous EDA Studio",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# Custom Dark Theme CSS
+st.markdown("""
+<style>
+    .main { background-color: #0b1120; }
+    h1, h2, h3 { color: #f1f5f9; font-weight: 800; }
+    .stMetric { background-color: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px; }
+    .metric-card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 1.2rem; text-align: center; }
+</style>
+""", unsafe_allow_html=True)
+
+st.title("⚡ Circuit Design Anything (CDA)")
+st.caption("Autonomous EDA Studio: Closed-Loop SPICE Synthesis, IEC 60063 Snapping & KiCad PCB Generation | By Hossein Nosrati")
+
+# Sidebar Controls
+st.sidebar.header("🛠️ Design Specifications")
+
+topology_choice = st.sidebar.selectbox(
+    "Circuit Topology",
+    options=[
+        "Sallen-Key Active Lowpass (2nd Order)",
+        "Active Twin-T Notch Filter (50/60 Hz)",
+        "Precision Instrumentation Amplifier (AD620)",
+        "1st-Order Passive RC Lowpass",
+    ],
+    index=0,
+)
+
+if "Instrumentation" in topology_choice:
+    target_param = st.sidebar.slider("Voltage Gain (V/V)", min_value=2, max_value=1000, value=100, step=1)
+    param_label = "Target Gain"
+    param_unit = "x"
+else:
+    target_param = st.sidebar.slider("Target Frequency (Hz)", min_value=10, max_value=5000, value=100, step=5)
+    param_label = "Cutoff / Center Freq"
+    param_unit = "Hz"
+
+series_choice = st.sidebar.selectbox(
+    "IEC Component Tolerance Series",
+    options=["E12 (10% Tolerance)", "E24 (5% Commercial Standard)", "E96 (1% Precision)"],
+    index=1,
+)
+series_clean = series_choice[:3]
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🔗 Open-Source Ecosystem")
+st.sidebar.markdown("[GitHub Repository](https://github.com/hosseinnosrati/circuit-design-anything)")
+st.sidebar.markdown("[Hardware Debug Anything (HDA)](https://github.com/hosseinnosrati/hardware-debug-anything)")
+st.sidebar.markdown("[Author Portfolio](https://hosseinnosrati.github.io)")
+
+# Run Synthesis Engine
+if "Sallen" in topology_choice:
+    result = synthesize_sallen_key_lowpass(fc_target_hz=float(target_param), series=series_clean)
+    f_actual = result["actual_cutoff_hz"]
+    err_pct = result["cutoff_error_percent"]
+elif "Notch" in topology_choice:
+    result = synthesize_twin_t_notch(f_notch_hz=float(target_param), series=series_clean)
+    f_actual = result["actual_notch_hz"]
+    err_pct = result["error_percent"]
+elif "Instrumentation" in topology_choice:
+    result = synthesize_instrumentation_amp(gain=float(target_param), series=series_clean)
+    f_actual = result["actual_gain"]
+    err_pct = result["gain_error_percent"]
+else:
+    result = synthesize_rc_lowpass(fc_hz=float(target_param), series=series_clean)
+    f_actual = result["actual_cutoff_hz"]
+    err_pct = result["error_percent"]
+
+# Top Metrics Bar
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Design Specification", f"{target_param} {param_unit}")
+col2.metric("Commercial Realization", f"{f_actual} {param_unit}")
+col3.metric("Tolerance Deviation", f"{err_pct:+.2f} %")
+col4.metric("Component Series", series_clean)
+
+st.markdown("---")
+
+# Main Content Tabs
+tab_schematic, tab_spice, tab_kicad = st.tabs(["📐 Vector Schematic", "📈 SPICE Frequency Response", "📋 KiCad Netlist & BOM"])
+
+with tab_schematic:
+    st.subheader("Synthesized Vector Schematic (Schemdraw Engine)")
+    if "schematic_svg" in result and result["schematic_svg"]:
+        st.image(result["schematic_svg"], use_container_width=True)
+    st.markdown("**Selected Commercial Components:**")
+    for name, comp in result["components"].items():
+        if isinstance(comp, dict):
+            st.write(f"- **{name}**: `{comp['formatted']}` (Standard: {comp['standard_value']:.4g}, Error: {comp['error_percent']:+.2f}%)")
+        else:
+            st.write(f"- **{name}**: `{comp}`")
+
+with tab_spice:
+    st.subheader("AC Frequency Sweep & -3dB Bandwidth Analysis")
+    f_min = max(1.0, float(target_param) / 50.0)
+    f_max = float(target_param) * 50.0
+    f_axis = np.logspace(np.log10(f_min), np.log10(f_max), 400)
+    w = 2.0 * np.pi * f_axis
+
+    fig, ax = plt.subplots(figsize=(10, 3.8), dpi=130)
+    fig.patch.set_facecolor("#0b1120")
+    ax.set_facecolor("#0f172a")
+
+    if "Sallen" in topology_choice:
+        w_c = 2.0 * np.pi * f_actual
+        mag_db = 20 * np.log10(1.0 / np.sqrt((1 - (w / w_c)**2)**2 + 2 * (w / w_c)**2))
+    elif "Notch" in topology_choice:
+        w_n = 2.0 * np.pi * f_actual
+        mag_db = 20 * np.log10(np.maximum(1e-3, np.abs(1 - (w / w_n)**2)) / np.sqrt((1 - (w / w_n)**2)**2 + 4 * (w / w_n)**2))
+    else:
+        w_c = 2.0 * np.pi * f_actual
+        mag_db = 20 * np.log10(1.0 / np.sqrt(1 + (w / w_c)**2))
+
+    ax.semilogx(f_axis, mag_db, color="#38bdf8", lw=2.4, label="AC Magnitude (dB)")
+    ax.axvline(f_actual, color="#22c55e", ls="--", lw=1.6, label=f"Corner: {f_actual:.1f} Hz")
+    ax.set_xlabel("Frequency (Hz)", color="#94a3b8", fontsize=10)
+    ax.set_ylabel("Gain (dB)", color="#94a3b8", fontsize=10)
+    ax.grid(True, which="both", color="#1e293b", ls=":")
+    ax.tick_params(colors="#94a3b8")
+    for spine in ax.spines.values():
+        spine.set_color("#334155")
+    ax.legend(facecolor="#1e293b", edgecolor="#334155", labelcolor="#f1f5f9")
+    plt.tight_layout()
+    st.pyplot(fig)
+
+with tab_kicad:
+    st.subheader("Manufacturing Bill of Materials (BOM)")
+    st.markdown(result["bom_table"])
+
+    if "kicad_netlist" in result:
+        st.subheader("KiCad S-Expression Netlist (.net)")
+        st.code(result["kicad_netlist"], language="lisp")
+        st.download_button(
+            label="💾 Download KiCad Netlist (.net)",
+            data=result["kicad_netlist"],
+            file_name="circuit_design.net",
+            mime="text/plain",
+        )
