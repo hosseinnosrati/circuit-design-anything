@@ -137,3 +137,4 @@ def format_engineering_unit(val: float, comp_type: str) -> str:
         return f"{val:.3g} {unit}"
 
     return f"{val:.3g}"
+

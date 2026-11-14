@@ -239,3 +239,4 @@ def synthesize_instrumentation_amp(
         },
         "bom_table": KiCadExporter.generate_bom_markdown(bom_items),
     }
+

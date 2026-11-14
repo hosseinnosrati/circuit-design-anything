@@ -155,3 +155,4 @@ class SchematicRenderer:
             if output_path:
                 d.save(output_path)
             return d.get_imagedata("svg").decode("utf-8")
+

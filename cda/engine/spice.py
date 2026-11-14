@@ -259,3 +259,4 @@ class CircuitSimulator:
             lines.append(f"           --> Detected -3dB Cutoff: {cutoff_hz:.2f} Hz")
 
         return "\n".join(lines)
+
