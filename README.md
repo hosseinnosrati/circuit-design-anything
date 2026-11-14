@@ -64,7 +64,7 @@ Add CDA to your **Claude Code** or **Cursor** configuration in 30 seconds:
 uvx circuit-design-anything
 ```
 
-### 2. Claude Desktop / Claude Code Configuration
+### 2. Claude Desktop & Claude Code Configuration
 
 Add this block to your `claude_desktop_config.json`:
 
@@ -82,13 +82,36 @@ Add this block to your `claude_desktop_config.json`:
 }
 ```
 
-### 3. Native Installation
+### 3. Cursor & Windsurf IDE Integration
+
+In **Cursor** (`Cursor Settings` -> `Features` -> `MCP` -> `+ Add New MCP Server`) or **Windsurf**:
+* **Name**: `circuit-design-anything`
+* **Type**: `command`
+* **Command**: `python -m cda.server`
+
+### 4. Standalone CLI (No LLM Required)
+
+Engineers can run CDA directly from the terminal without AI models:
 
 ```bash
 git clone https://github.com/hosseinnosrati/circuit-design-anything.git
 cd circuit-design-anything
 pip install -e .
 cda
+```
+
+### 5. Native Python Library API
+
+Import CDA directly into Python scripts, Jupyter notebooks, or research pipelines:
+
+```python
+from cda.templates import synthesize_sallen_key_lowpass
+from cda.engine.spice import CircuitSimulator
+
+# Synthesize 1kHz 2nd-order active filter snapped to 1% E96 precision
+result = synthesize_sallen_key_lowpass(fc_target_hz=1000.0, series="E96")
+print(f"Synthesized Corner: {result['actual_cutoff_hz']} Hz (Error: {result['cutoff_error_percent']}%)")
+print(result["bom_table"])
 ```
 
 ---
