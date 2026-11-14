@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circuit-design-anything"
+version = "0.1.0"
+description = "Autonomous EDA & Circuit Engineering MCP Server for Closed-Loop SPICE Simulation, Schematic Rendering & KiCad Export"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Hossein Nosrati", email = "hnosrati0@gmail.com" }
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "eda",
+    "circuit-design",
+    "spice",
+    "kicad",
+    "schemdraw",
+    "claude-code",
+    "cursor",
+    "ai-agent",
+    "embedded"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "fastmcp>=4.0.0",
+    "mcp>=1.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "schemdraw>=0.18.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/hosseinnosrati/circuit-design-anything"
+Repository = "https://github.com/hosseinnosrati/circuit-design-anything.git"
+Issues = "https://github.com/hosseinnosrati/circuit-design-anything/issues"
+
+[project.scripts]
+cda = "cda.server:main"
+cda-mcp = "cda.server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cda*"]
