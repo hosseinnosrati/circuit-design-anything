@@ -163,6 +163,7 @@ class CircuitSimulator:
         # Analytical extraction for common RLC / Sallen-Key netlists
         resistors = {}
         capacitors = {}
+        inductors = {}
         for line in lines:
             parts = line.split()
             if not parts:
@@ -172,6 +173,26 @@ class CircuitSimulator:
                 resistors[name] = cls.parse_value(parts[3]) if len(parts) >= 4 else 1e3
             elif name.startswith("C"):
                 capacitors[name] = cls.parse_value(parts[3]) if len(parts) >= 4 else 1e-9
+            elif name.startswith("L"):
+                inductors[name] = cls.parse_value(parts[3]) if len(parts) >= 4 else 1e-3
+
+        # If RLC resonant network
+        if len(resistors) >= 1 and len(inductors) >= 1 and len(capacitors) >= 1:
+            R = list(resistors.values())[0]
+            L = list(inductors.values())[0]
+            C = list(capacitors.values())[0]
+            # Series RLC Bandpass / Lowpass: Denom = s^2*(L*C) + s*(R*C) + 1
+            a2 = L * C
+            a1 = R * C
+            a0 = 1.0
+            f_res = 1.0 / (2.0 * math.pi * math.sqrt(L * C))
+            return cls.simulate_transfer_function(
+                num_coeffs=[a1, 0.0] if "BANDPASS" in netlist_text.upper() else [1.0],
+                den_coeffs=[a2, a1, a0],
+                f_start=max(1.0, f_res / 50.0),
+                f_stop=f_res * 50.0,
+                netlist_name=f"RLC Resonant Filter (f0={f_res:.1f}Hz, Q={math.sqrt(L/C)/R:.2f})"
+            )
 
         # If 2nd-order Sallen-Key lowpass (R1, R2, C1, C2)
         if len(resistors) >= 2 and len(capacitors) >= 2:

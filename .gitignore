@@ -9,4 +9,11 @@ build/
 *.log
 .venv/
 env/
+assets/
+*.png
+*.ico
+*.webmanifest
+manifest.json
+CLAUDE.md
+.nojekyll
 

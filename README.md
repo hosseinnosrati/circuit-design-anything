@@ -1,4 +1,4 @@
-﻿# Circuit Design Anything (CDA)
+# Circuit Design Anything (CDA)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol-8A2BE2.svg)](https://modelcontextprotocol.io)
@@ -41,6 +41,16 @@ Large Language Models have memorized Sedra & Smith and Horowitz & Hill, yet they
 
 **CDA closes the loop.** It gives AI agents an automated laboratory bench:
 $$\text{User Intent} \longrightarrow \text{Analytical Synthesis} \longrightarrow \text{IEC Snapping} \longrightarrow \text{SPICE Verification} \longrightarrow \text{SVG Schematic} \longrightarrow \text{KiCad PCB}$$
+
+---
+
+## 🌟 Live Interactive Studio (Streamlit Cloud)
+
+Experience CDA live in your browser with zero local installation:  
+👉 **[Launch 24/7 Cloud EDA Studio](https://circuit-design-anything-sgsl7u3hcr76gy96xsltgg.streamlit.app/)**
+
+* **Mode 1: Guided Filter Synthesizer**: Parametric design with real-time IEC 60063 E12/E24/E96 decade snapping, Schemdraw vector rendering, and KiCad BOM generation.
+* **Mode 2: Custom SPICE Netlist Engine**: **Not limited to templates!** Input *any arbitrary SPICE netlist* (resistors, capacitors, inductors, active operational amplifiers) or transfer function. Deterministically solves the Modified Nodal Analysis (MNA) matrix, extracts -3dB cutoff corner, passband gain, phase margin, roll-off rate, and renders dual Bode plots.
 
 ---
 
