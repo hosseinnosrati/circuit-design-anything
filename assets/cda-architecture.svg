@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="100%" height="260">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="green-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-10%" width="110%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="880" height="260" rx="16" fill="url(#bg)" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Header Banner -->
+  <text x="32" y="38" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="16" letter-spacing="1.5">CIRCUIT DESIGN ANYTHING (CDA)</text>
+  <text x="32" y="58" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12">Autonomous EDA &amp; Closed-Loop SPICE Netlist Synthesis for AI Coding Agents</text>
+
+  <!-- Stage 1: AI Prompt -->
+  <g transform="translate(32, 80)" filter="url(#shadow)">
+    <rect width="180" height="140" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1.2"/>
+    <rect width="180" height="6" rx="3" fill="#64748b"/>
+    <text x="14" y="28" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13">1. AI Agent Prompt</text>
+    <text x="14" y="50" fill="#94a3b8" font-family="monospace" font-size="11">Claude / Cursor:</text>
+    <rect x="12" y="58" width="156" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="18" y="74" fill="#38bdf8" font-family="monospace" font-size="9.5">"Design 10kHz lowpass</text>
+    <text x="18" y="88" fill="#38bdf8" font-family="monospace" font-size="9.5">with 1% resistors"</text>
+    <text x="14" y="122" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">Natural language spec</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M 224 150 L 244 150" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="4,4"/>
+  <polygon points="248,150 242,146 242,154" fill="#06b6d4"/>
+
+  <!-- Stage 2: MNA SPICE Engine -->
+  <g transform="translate(254, 80)" filter="url(#shadow)">
+    <rect width="180" height="140" rx="10" fill="#1e293b" stroke="#0284c7" stroke-width="1.5"/>
+    <rect width="180" height="6" rx="3" fill="url(#cyan-glow)"/>
+    <text x="14" y="28" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13">2. MNA SPICE Solver</text>
+    <rect x="12" y="44" width="156" height="58" rx="6" fill="#0f172a" stroke="#0369a1"/>
+    <text x="18" y="60" fill="#a5f3fc" font-family="monospace" font-size="9.5">[G + sC] * V = I</text>
+    <text x="18" y="74" fill="#a5f3fc" font-family="monospace" font-size="9.5">-3dB Cutoff: 9.98 kHz</text>
+    <text x="18" y="88" fill="#a5f3fc" font-family="monospace" font-size="9.5">Phase Margin: 62.4 deg</text>
+    <text x="14" y="122" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="10.5">Deterministic Matrix Math</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M 446 150 L 466 150" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="4,4"/>
+  <polygon points="470,150 464,146 464,154" fill="#3b82f6"/>
+
+  <!-- Stage 3: IEC 60063 Snapping -->
+  <g transform="translate(476, 80)" filter="url(#shadow)">
+    <rect width="180" height="140" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.2"/>
+    <rect width="180" height="6" rx="3" fill="#8b5cf6"/>
+    <text x="14" y="28" fill="#c084fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13">3. Parts Picker</text>
+    <rect x="12" y="44" width="156" height="58" rx="6" fill="#0f172a" stroke="#6d28d9"/>
+    <text x="18" y="60" fill="#e9d5ff" font-family="monospace" font-size="9.5">Raw: 4821.3 Ohm</text>
+    <text x="18" y="74" fill="#a855f7" font-family="monospace" font-weight="700" font-size="9.5">-> IEC 60063 E96 1%</text>
+    <text x="18" y="88" fill="#4ade80" font-family="monospace" font-size="9.5">Snapped: 4.87 kOhm</text>
+    <text x="14" y="122" fill="#c084fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">Real Market Decades</text>
+  </g>
+
+  <!-- Arrow 3 -->
+  <path d="M 668 150 L 688 150" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4,4"/>
+  <polygon points="692,150 686,146 686,154" fill="#10b981"/>
+
+  <!-- Stage 4: KiCad PCB Netlist -->
+  <g transform="translate(698, 80)" filter="url(#shadow)">
+    <rect width="150" height="140" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <rect width="150" height="6" rx="3" fill="url(#green-glow)"/>
+    <text x="12" y="28" fill="#4ade80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13">4. KiCad &amp; BOM</text>
+    <rect x="10" y="44" width="130" height="58" rx="6" fill="#0f172a" stroke="#047857"/>
+    <text x="14" y="60" fill="#86efac" font-family="monospace" font-size="9.5">.net KiCad 8.0</text>
+    <text x="14" y="74" fill="#86efac" font-family="monospace" font-size="9.5">Schemdraw SVG</text>
+    <text x="14" y="88" fill="#86efac" font-family="monospace" font-size="9.5">BOM: 0805 SMD</text>
+    <text x="12" y="122" fill="#4ade80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="10.5">Factory Ready &lt;15ms</text>
+  </g>
+</svg>

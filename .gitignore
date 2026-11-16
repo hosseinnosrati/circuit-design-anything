@@ -9,7 +9,8 @@ build/
 *.log
 .venv/
 env/
-assets/
+!assets/
+!assets/*.svg
 *.png
 *.ico
 *.webmanifest
