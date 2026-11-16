@@ -1,6 +1,7 @@
 # Circuit Design Anything (CDA)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/hosseinnosrati/circuit-design-anything/actions/workflows/ci.yml/badge.svg)](https://github.com/hosseinnosrati/circuit-design-anything/actions)
 [![MCP](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol-8A2BE2.svg)](https://modelcontextprotocol.io)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-brightgreen.svg)](https://python.org)
 [![Tests](https://img.shields.io/badge/Tests-12%2F12%20Passing-success.svg)](tests/)
