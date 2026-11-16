@@ -12,22 +12,9 @@
 
 ---
 
-```
-                       ┌──────────────────────────────────────────────┐
-                       │   AI Agent (Claude Code / Cursor / Codex)    │
-                       └──────────────────────┬───────────────────────┘
-                                              │ Model Context Protocol (MCP)
-                                              ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────┐
-│                             Circuit Design Anything (CDA)                                │
-├──────────────────────────┬───────────────────────────┬───────────────────────────────────┤
-│  1. Synthesis Engine     │  2. SPICE Verification    │  3. CAD & Manufacturing           │
-│  - Sallen-Key (2nd Order)│  - Modified Nodal Analysis│  - Schemdraw Vector Engine (SVG)  │
-│  - Twin-T Notch (50/60Hz)│  - -3dB Bandwidth & Margin│  - KiCad v6-v8 Netlist (.net)     │
-│  - Instrumentation Amp   │  - AC Sweep & Roll-Off    │  - SMT/BOM CSV (JLCPCB / PCBWay)  │
-│  - E12/E24/E96 Snapping  │  - ASCII Bode Plots       │  - 0805 / 0603 Footprint Mapping  │
-└──────────────────────────┴───────────────────────────┴───────────────────────────────────┘
-```
+<p align="center">
+  <img src="assets/cda-architecture.svg" alt="Circuit Design Anything Architecture" width="100%">
+</p>
 
 ---
 

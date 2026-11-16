@@ -1,0 +1,63 @@
+{
+  "name": "circuit-design-anything",
+  "displayName": "Circuit Design Anything (CDA) — Autonomous EDA & SPICE Synthesis",
+  "version": "0.1.0",
+  "description": "Autonomous electronic design automation for AI agents. Run deterministic Modified Nodal Analysis (MNA) SPICE AC sweeps, snap theoretical component values to real-world IEC 60063 standards (E12, E24, E96 1%), and export KiCad PCB netlists directly in Claude Code, Cursor, and Copilot.",
+  "author": {
+    "name": "Mohammad Hossein Nosrati",
+    "email": "nosrati_m@nt.iust.ac.ir",
+    "secondaryEmail": "hnosrati0@gmail.com",
+    "github": "https://github.com/hosseinnosrati",
+    "affiliation": "Iran University of Science and Technology (IUST)"
+  },
+  "homepage": "https://github.com/hosseinnosrati/circuit-design-anything",
+  "liveDemo": "https://circuit-design-anything-sgsl7u3hcr76gy96xsltgg.streamlit.app/",
+  "license": "Apache-2.0",
+  "pricing": {
+    "type": "free",
+    "model": "open-access"
+  },
+  "categories": [
+    "Hardware & Electronics",
+    "Developer Tools",
+    "Code Execution & Simulation"
+  ],
+  "tags": [
+    "eda",
+    "spice-simulation",
+    "kicad",
+    "electronics",
+    "circuit-design",
+    "mcp",
+    "claude-code",
+    "cursor"
+  ],
+  "supportedAgents": [
+    "claude-code",
+    "claude-desktop",
+    "cursor",
+    "windsurf",
+    "github-copilot",
+    "antigravity"
+  ],
+  "runtime": {
+    "type": "python",
+    "minVersion": "3.10",
+    "command": "python",
+    "args": ["-m", "cda.server"]
+  },
+  "tools": [
+    {
+      "name": "simulate_ac",
+      "description": "Performs deterministic Modified Nodal Analysis (MNA) AC frequency simulation on arbitrary two-port networks, computing magnitude, phase, -3dB cutoff frequency, and phase margin."
+    },
+    {
+      "name": "pick_standard_parts",
+      "description": "Snaps continuous theoretical resistor and capacitor values to commercially manufactured IEC 60063 decades (E12 10%, E24 5%, or E96 1% precision)."
+    },
+    {
+      "name": "export_kicad",
+      "description": "Synthesizes vector schematics and generates complete KiCad PCB netlists and Bill of Materials (BOM) files ready for hardware PCB manufacturing."
+    }
+  ]
+}
