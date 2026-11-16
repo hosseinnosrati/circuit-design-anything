@@ -54,6 +54,27 @@ class TestCDASpice(unittest.TestCase):
         self.assertIsNotNone(res.cutoff_freq_hz)
         self.assertTrue(len(res.ascii_bode_plot) > 50)
 
+    def test_monte_carlo_analysis(self):
+        netlist = """
+        R1 in out 10k
+        C1 out 0 100n
+        """
+        mc = CircuitSimulator.simulate_monte_carlo(
+            netlist,
+            resistor_tolerance=0.01,
+            capacitor_tolerance=0.05,
+            num_runs=30,
+            f_start=1.0,
+            f_stop=10000.0,
+            points=25,
+        )
+        self.assertEqual(mc["status"], "SUCCESS")
+        self.assertEqual(mc["num_runs"], 30)
+        self.assertGreater(mc["mean_cutoff_hz"], 100.0)
+        self.assertLess(mc["mean_cutoff_hz"], 250.0)
+        self.assertGreater(mc["std_cutoff_hz"], 0.0)
+        self.assertEqual(len(mc["ci_95_percent"]), 2)
+
 
 class TestCDASchematic(unittest.TestCase):
     def test_render_rc_filter_svg(self):

@@ -117,7 +117,7 @@ if studio_mode == "🎛️ Guided Filter Synthesizer":
     st.markdown("---")
 
     # Main Content Tabs
-    tab_schematic, tab_spice, tab_kicad = st.tabs(["📐 Vector Schematic", "📈 SPICE Frequency Response", "📋 KiCad Netlist & BOM"])
+    tab_schematic, tab_spice, tab_mc, tab_kicad = st.tabs(["📐 Vector Schematic", "📈 SPICE Frequency Response", "🎲 Monte Carlo Tolerance", "📋 KiCad Netlist & BOM"])
 
     with tab_schematic:
         st.subheader("Synthesized Vector Schematic (Schemdraw Engine)")
@@ -162,6 +162,55 @@ if studio_mode == "🎛️ Guided Filter Synthesizer":
         ax.legend(facecolor="#1e293b", edgecolor="#334155", labelcolor="#f1f5f9")
         plt.tight_layout()
         st.pyplot(fig)
+
+    with tab_mc:
+        st.subheader("🎲 Monte Carlo Component Tolerance & Yield Simulation")
+        st.caption("Simulates stochastic component manufacturing drift across 100 iterations (Gaussian 3-sigma distribution).")
+
+        mc_col1, mc_col2 = st.columns(2)
+        with mc_col1:
+            r_tol_val = st.slider("Resistor Tolerance (±%)", min_value=0.5, max_value=10.0, value=1.0 if "E96" in series_choice else 5.0, step=0.5)
+        with mc_col2:
+            c_tol_val = st.slider("Capacitor Tolerance (±%)", min_value=1.0, max_value=20.0, value=5.0 if "E96" in series_choice else 10.0, step=1.0)
+
+        mc_result = CircuitSimulator.simulate_monte_carlo(
+            netlist=result["spice_netlist"],
+            resistor_tolerance=r_tol_val / 100.0,
+            capacitor_tolerance=c_tol_val / 100.0,
+            num_runs=100,
+        )
+
+        m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+        m_col1.metric("Nominal Cutoff", f"{mc_result['nominal_cutoff_hz']:.1f} Hz" if mc_result['nominal_cutoff_hz'] else "N/A")
+        m_col2.metric("Mean Monte Carlo", f"{mc_result['mean_cutoff_hz']:.1f} Hz")
+        m_col3.metric("Standard Deviation (σ)", f"±{mc_result['std_cutoff_hz']:.2f} Hz")
+        m_col4.metric("95% Yield Interval", f"[{mc_result['ci_95_percent'][0]:.1f}, {mc_result['ci_95_percent'][1]:.1f}] Hz")
+
+        # Monte Carlo Envelope Plot
+        fig_mc, ax_mc = plt.subplots(figsize=(10, 3.8), dpi=120)
+        fig_mc.patch.set_facecolor("#0b1120")
+        ax_mc.set_facecolor("#0f172a")
+
+        freqs = mc_result["frequencies"]
+        p10 = mc_result["mag_p10_db"]
+        p90 = mc_result["mag_p90_db"]
+        median = mc_result["mag_median_db"]
+        nominal_mag = mc_result["mag_nominal_db"]
+
+        ax_mc.fill_between(freqs, p10, p90, color="#38bdf8", alpha=0.25, label="10th–90th Percentile Yield Envelope")
+        ax_mc.plot(freqs, median, color="#a855f7", lw=1.8, ls="--", label="Median Response")
+        ax_mc.plot(freqs, nominal_mag, color="#22c55e", lw=2.0, label="Nominal Design Response")
+
+        ax_mc.set_xscale("log")
+        ax_mc.set_xlabel("Frequency (Hz)", color="#94a3b8", fontsize=10)
+        ax_mc.set_ylabel("Magnitude (dB)", color="#94a3b8", fontsize=10)
+        ax_mc.grid(True, color="#1e293b", ls=":")
+        ax_mc.tick_params(colors="#94a3b8")
+        for spine in ax_mc.spines.values():
+            spine.set_color("#334155")
+        ax_mc.legend(facecolor="#1e293b", edgecolor="#334155", labelcolor="#f1f5f9")
+        plt.tight_layout()
+        st.pyplot(fig_mc)
 
     with tab_kicad:
         st.subheader("Manufacturing Bill of Materials (BOM)")

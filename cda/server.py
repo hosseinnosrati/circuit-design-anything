@@ -172,6 +172,36 @@ def render_schematic_to_file(
     }
 
 
+@mcp.tool()
+def run_monte_carlo(
+    netlist: str,
+    resistor_tolerance_pct: float = 1.0,
+    capacitor_tolerance_pct: float = 5.0,
+    num_runs: int = 100,
+) -> Dict[str, Any]:
+    """Runs Monte Carlo tolerance analysis on a circuit netlist.
+
+    Evaluates real-world component tolerance distributions (Gaussian 3-sigma)
+    and returns 95% confidence intervals, mean cutoff frequency, and std deviation.
+
+    Args:
+        netlist: SPICE netlist string.
+        resistor_tolerance_pct: Resistor tolerance percentage (e.g. 1.0 for 1% E96).
+        capacitor_tolerance_pct: Capacitor tolerance percentage (e.g. 5.0 for 5% ceramic).
+        num_runs: Number of stochastic runs (default: 100).
+
+    Returns:
+        Dictionary containing nominal cutoff, mean cutoff, standard deviation,
+        and 95% confidence interval bounds.
+    """
+    return CircuitSimulator.simulate_monte_carlo(
+        netlist=netlist,
+        resistor_tolerance=resistor_tolerance_pct / 100.0,
+        capacitor_tolerance=capacitor_tolerance_pct / 100.0,
+        num_runs=num_runs,
+    )
+
+
 def main():
     """Server entrypoint."""
     mcp.run()

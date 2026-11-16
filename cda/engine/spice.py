@@ -49,18 +49,21 @@ class CircuitSimulator:
 
     @staticmethod
     def parse_value(val_str: str) -> float:
-        """Parse engineering notation string (e.g. '10k', '100n', '4.7u', '1M')."""
+        """Parse engineering notation string (e.g. '10k', '100n', '4.7u', '1M', or '1.0e-07')."""
         val_str = val_str.strip()
+        # Direct float conversion (e.g. '4700', '1e4', '1.0e-7')
+        try:
+            return float(val_str)
+        except ValueError:
+            pass
+
         multipliers = {
             'p': 1e-12, 'n': 1e-9, 'u': 1e-6, 'm': 1e-3,
             'k': 1e3, 'meg': 1e6, 'mhz': 1e6, 'g': 1e9,
         }
-        m = re.match(r"^([+-]?\d+(?:\.\d+)?)\s*([a-zA-Z]+)?", val_str)
+        m = re.match(r"^([+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*([a-zA-Z]+)?", val_str)
         if not m:
-            try:
-                return float(val_str)
-            except ValueError:
-                return 1.0
+            return 1.0
 
         num = float(m.group(1))
         unit = (m.group(2) or "").lower()
@@ -280,4 +283,84 @@ class CircuitSimulator:
             lines.append(f"           --> Detected -3dB Cutoff: {cutoff_hz:.2f} Hz")
 
         return "\n".join(lines)
+
+    @classmethod
+    def simulate_monte_carlo(
+        cls,
+        netlist: str,
+        resistor_tolerance: float = 0.01,
+        capacitor_tolerance: float = 0.05,
+        num_runs: int = 100,
+        f_start: float = 1.0,
+        f_stop: float = 1e6,
+        points: int = 50,
+    ) -> Dict[str, Any]:
+        """Runs Monte Carlo tolerance sweep on passive components in a netlist.
+        
+        Evaluates real-world component drift (Gaussian distribution where 3*sigma = tolerance)
+        and extracts 95% confidence intervals, mean, std deviation, and envelope percentiles.
+        """
+        nominal = cls.simulate_netlist(netlist, f_start=f_start, f_stop=f_stop, points=points)
+        frequencies = nominal.frequencies
+        
+        lines = [line.strip() for line in netlist.strip().splitlines() if line.strip() and not line.startswith("*")]
+        
+        cutoff_samples: List[float] = []
+        all_mag_db: List[List[float]] = []
+        rng = np.random.default_rng(seed=42)
+        
+        for _ in range(num_runs):
+            perturbed_lines = []
+            for line in lines:
+                parts = line.split()
+                if len(parts) >= 4 and parts[0].upper().startswith("R"):
+                    val = cls.parse_value(parts[3])
+                    val_perturbed = val * float(1.0 + rng.normal(0, resistor_tolerance / 3.0))
+                    perturbed_lines.append(f"{parts[0]} {parts[1]} {parts[2]} {val_perturbed:.6e}")
+                elif len(parts) >= 4 and parts[0].upper().startswith("C"):
+                    val = cls.parse_value(parts[3])
+                    val_perturbed = val * float(1.0 + rng.normal(0, capacitor_tolerance / 3.0))
+                    perturbed_lines.append(f"{parts[0]} {parts[1]} {parts[2]} {val_perturbed:.6e}")
+                else:
+                    perturbed_lines.append(line)
+                    
+            pert_netlist = "\n".join(perturbed_lines)
+            run_res = cls.simulate_netlist(pert_netlist, f_start=f_start, f_stop=f_stop, points=points)
+            if run_res.cutoff_freq_hz:
+                cutoff_samples.append(run_res.cutoff_freq_hz)
+            if run_res.magnitude_db:
+                all_mag_db.append(run_res.magnitude_db)
+                
+        if not cutoff_samples:
+            cutoff_samples = [nominal.cutoff_freq_hz or 1000.0]
+            
+        arr_cutoffs = np.array(cutoff_samples)
+        arr_mags = np.array(all_mag_db) if all_mag_db else np.array([nominal.magnitude_db])
+        
+        mean_fc = float(np.mean(arr_cutoffs))
+        std_fc = float(np.std(arr_cutoffs))
+        ci_lower = float(np.percentile(arr_cutoffs, 2.5))
+        ci_upper = float(np.percentile(arr_cutoffs, 97.5))
+        
+        mag_p10 = np.percentile(arr_mags, 10, axis=0).tolist() if arr_mags.size else []
+        mag_p90 = np.percentile(arr_mags, 90, axis=0).tolist() if arr_mags.size else []
+        mag_median = np.median(arr_mags, axis=0).tolist() if arr_mags.size else []
+        
+        return {
+            "status": "SUCCESS",
+            "num_runs": num_runs,
+            "nominal_cutoff_hz": nominal.cutoff_freq_hz,
+            "mean_cutoff_hz": mean_fc,
+            "std_cutoff_hz": std_fc,
+            "ci_95_percent": [ci_lower, ci_upper],
+            "cutoff_samples": cutoff_samples[:20],
+            "frequencies": frequencies,
+            "mag_nominal_db": nominal.magnitude_db,
+            "mag_median_db": mag_median,
+            "mag_p10_db": mag_p10,
+            "mag_p90_db": mag_p90,
+            "resistor_tolerance_pct": resistor_tolerance * 100.0,
+            "capacitor_tolerance_pct": capacitor_tolerance * 100.0,
+        }
+
 
