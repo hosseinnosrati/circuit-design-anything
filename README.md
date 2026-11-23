@@ -42,17 +42,6 @@ Experience CDA live in your browser with zero local installation:
 
 ---
 
-## 🛰️ Telecommunications & Satellite CubeSat Application
-
-In Low-Earth-Orbit (LEO) satellite communications and RF front-end engineering, extreme orbital temperature swings (-40°C to +85°C) cause severe passive component value drifts. A nominal 50-ohm RF impedance matching network or Low-Noise Amplifier (LNA) stage can degrade, inducing damaging reflection loss and Voltage Standing Wave Ratio (VSWR) spikes.
-
-**CDA solves this deterministically for space systems:**
-1. **MNA Matrix Solution**: Evaluates high-frequency nodal admittance $\mathbf{Y}(s)\mathbf{V}(s) = \mathbf{I}(s)$ up to microwave frequencies.
-2. **Monte Carlo 3-Sigma Tolerance Yield**: Runs 500+ stochastic iterations under Gaussian thermal component distributions to guarantee that RF matching remains within acceptable return loss thresholds ($S_{11} < -15\text{ dB}$).
-3. **Space-Grade E96 Snapping**: Automatically projects ideal synthesis values to standardized high-reliability surface-mount passive components.
-
----
-
 ## Quickstart
 
 ### 1. Run with `uvx` (No Installation Required)
